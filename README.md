@@ -1,9 +1,13 @@
 # GraphQL
 
 ### INSTALL
-```yarn```
+```
+yarn
+```
 
 ### RUN
-```node express.js```
+```
+node express.js
+```
 
 ### visit localhost:3000/graphql
