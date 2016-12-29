@@ -51,7 +51,7 @@ const resolvers = {
 
 server.use('/graphql', graphqlHttp({
                                      schema,
-                                     graphiql  : true,
+                                     graphiql  : true, // use graphiql interface
                                      rootValue : resolvers
                                  }));
 
