@@ -1,12 +1,13 @@
-const express                                  = require('express');
-const graphqlHttp                              = require('express-graphql');
+const express     = require('express');
+const graphqlHttp = require('express-graphql');
 const {
-    getVideoById, getVideos, createVideo } = require('./data/index');
-const server                                   = express();
-const port                                     = process.env.PORT || 3000;
+          getVideoById, getVideos, createVideo
+      }           = require('./data/index');
+const server      = express();
+const port        = process.env.PORT || 3000;
 
 const {
-          GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLList, GraphQLInt, GraphQLNonNull, GraphQLBoolean, GraphQLID
+          GraphQLSchema, GraphQLObjectType, GraphQLInputObjectType, GraphQLString, GraphQLList, GraphQLInt, GraphQLNonNull, GraphQLBoolean, GraphQLID
       } = require('graphql');
 
 const videoType = new GraphQLObjectType({
@@ -32,31 +33,40 @@ const videoType = new GraphQLObjectType({
     }
 });
 
+const videoInputType = new GraphQLInputObjectType({
+    name   : 'videoInput',
+    fields : {
+        title    : {
+            type        : new GraphQLNonNull(GraphQLID),
+            description : 'The title of the video'
+        },
+        duration : {
+            type        : new GraphQLNonNull(GraphQLInt),
+            description : 'The duration of the video'
+        },
+        watched  : {
+            type : new GraphQLNonNull(GraphQLBoolean)
+        }
+    }
+});
+
 const mutationType = new GraphQLObjectType({
-                                           name        : 'Mutation',
-                                           description : 'The root Mutation type',
-                                           fields      : {
-                                               createVideo : {
-                                                   type    : videoType,
-                                                   args    : {
-                                                       title    : {
-                                                           type        : new GraphQLNonNull(GraphQLID),
-                                                           description : 'The title of the video'
-                                                       },
-                                                       duration : {
-                                                           type        : new GraphQLNonNull(GraphQLInt),
-                                                           description : 'The duration of the video'
-                                                       },
-                                                       watched  : {
-                                                           type : new GraphQLNonNull(GraphQLBoolean)
-                                                       }
-                                                   },
-                                                   resolve : (_, args) => {
-                                                       return createVideo(args)
-                                                   }
-                                               }
-                                           }
-                                       });
+    name        : 'Mutation',
+    description : 'The root Mutation type',
+    fields      : {
+        createVideo : {
+            type    : videoType,
+            args    : {
+                video : {
+                    type : new GraphQLNonNull(videoInputType),
+                },
+            },
+            resolve : (_, args) => {
+                return createVideo(args.video)
+            }
+        }
+    }
+});
 
 const queryType = new GraphQLObjectType({
     name        : 'QueryType',
